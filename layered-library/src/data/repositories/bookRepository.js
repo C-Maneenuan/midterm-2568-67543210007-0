@@ -53,8 +53,28 @@ class BookRepository {
 
     // TODO: Implement update
     async update(id, bookData) {
-        // ให้นักศึกษาเขียนเอง
-        // return Promise
+        const { title, author, isbn } = bookData;
+        
+        return new Promise((resolve, reject) => {
+            const sql = `UPDATE books SET 
+                title = ?, 
+                author = ?, 
+                isbn = ?, 
+                updated_at = CURRENT_TIMESTAMP 
+                WHERE id = ?`;
+            
+            db.run(sql, [title, author, isbn, id], function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    // Return updated book
+                    db.get('SELECT * FROM books WHERE id = ?', [id], (err, row) => {
+                        if (err) reject(err);
+                        else resolve(row);
+                    });
+                }
+            });
+        });
     }
 
     // TODO: Implement updateStatus
